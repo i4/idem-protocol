@@ -8,7 +8,7 @@ For a detailed description of Idem and its overload prevention mechanism, please
 
 ## Requirements
 
-It is easiest to use the provided Dockerfile to run a docker container with all the necessary requirements already installed and the Idem environment pre-configured. Please be aware that building the docker image may take a couple of minutes.
+We suggest to use the provided Dockerfile to run a docker container with all the necessary requirements already installed and the Idem environment pre-configured. Please be aware that building the docker image may take a couple of minutes.
 
 The following command first builds the docker image ``idem:latest`` (if not already present) and starts a docker container named ``idem`` with an interactive shell session. Setting environment variables for the user id (``LOCALUID``) and group id (``LOCALGID``) ensures that the docker user has access to the mounted volume later.
 
@@ -17,11 +17,12 @@ The following command first builds the docker image ``idem:latest`` (if not alre
 LOCALUID=$(id -u) LOCALGID=$(id -g) docker compose run --rm --name idem idem-service
 ```
 
-If present, please ignore the warning "pull access denied for idem"; this is default behavior for docker compose and simply signals that the image could not be found in the docker registry.
+If present, please ignore the warning "*pull access denied for idem*"; this is default behavior for docker compose and simply signals that the image could not be found in the docker registry.
 
 After starting the docker container, please refer to [the next section](#running-idem) for instructions on how to run the Idem prototype.
 
-If, for any reasons, you do not want to use docker, the Idem prototype and quick start script requires the following packages:
+If you do not want to use docker, we recommend using a freshly installed [Ubuntu Jammy Jellyfish (22.04)](https://releases.ubuntu.com/22.04/) to avoid unwanted effects with already installed packages or custom configuration.
+The Idem prototype and quick start script require the following packages:
 
 - Java Development Kit (JDK) Version >= 11
 - Python >= 3.5
@@ -32,7 +33,7 @@ If, for any reasons, you do not want to use docker, the Idem prototype and quick
 - gnuplot
 - librsvg2-bin
 
-A description on how to setup Idem when not using the provided docker image can be found [here](#setup-without-docker).
+Further steps on how to setup Idem for evaluation when not using the provided docker image can be found [here](#setup-without-docker).
 
 ## Running Idem
 
@@ -114,9 +115,10 @@ If you have installed all the required dependencies for the Idem prototype, you 
 
 The provided [quick start](#quick-start) script ``start.sh``, however, requires some additional setup steps:
 
-  1) Configure your system to allow a **passwordless** ssh connection to localhost.
-  2) Update ``scripts/config/queue`` with your local user name.
-  3) Run ``scripts/queue/queue_runner.py`` in your **home** folder. The runner will automatically create the required folders (``~/queue`` and ``~/runner``).
+  1) Ensure that full path to the repository folder does not contain any whitespaces or special characters.
+  2) Configure your system to allow a **passwordless** ssh connection to localhost.
+  3) Update ``scripts/config/queue`` with your local user name.
+  4) Run ``scripts/queue/queue_runner.py`` in your **home** folder. The runner will automatically create the required folders (``~/queue`` and ``~/runner``).
 
 ### Running Your Own Experiments
 
