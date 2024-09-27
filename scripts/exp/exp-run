@@ -1,0 +1,8 @@
+#!/bin/bash
+set -e
+
+script="$1"
+shift
+
+cd "${BASE_DIR}"
+exec scripts/test/"${script}".py run "${script}" "$@"

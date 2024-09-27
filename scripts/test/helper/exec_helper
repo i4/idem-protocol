@@ -1,0 +1,111 @@
+#!/bin/bash
+set -e
+
+PARAMS=( "$@" )
+
+function print_call() {
+    printf "exec_helper failed: "
+    printf "%q " "$0" "${PARAMS[@]}"
+    printf "\nCalled from directory: %q\n" "$PWD"
+    exit 1
+}
+function on_exit() {
+    # kill own process group
+    kill -- -$$ 2>/dev/null || true
+}
+trap print_call INT
+trap print_call ERR
+trap on_exit EXIT
+
+working_dir="$1"
+out_dir="$2"
+export OUTPUT_ID="$3"
+shift 3
+
+if [[ "$1" = "netns" ]]; then
+    server_name="$2"
+    shift 2
+    # requires the following sudo configuration (with matching username)
+    # eischer ALL=NOPASSWD: /usr/sbin/ip netns exec refit-client[0-9] sudo -u eischer *
+    # eischer ALL=NOPASSWD: /usr/sbin/ip netns exec refit-server[0-9] sudo -u eischer *
+    # eischer ALL=NOPASSWD: /usr/sbin/ip netns exec refit-server[0-9][0-9] sudo -u eischer *
+    exec sudo ip netns exec "refit-${server_name}" sudo "-u" "$(whoami)" "$0" "$working_dir" "$out_dir" "$OUTPUT_ID" "timer" "$@"
+elif [[ "$1" = "timer" ]]; then
+    TIMEOUT="$2"
+    shift 2
+elif [[ "$1" = "run" ]]; then
+    TIMEOUT=""
+    shift 1
+else
+    echo "Unknown operation $1"
+    exit 1
+fi
+
+# create output directory and then get an absolute path
+mkdir -p "${out_dir}"
+OUTPUT_DIRECTORY="$(cd "${out_dir}" && pwd)"
+export OUTPUT_DIRECTORY
+logfile="$OUTPUT_DIRECTORY/$OUTPUT_ID.log"
+
+cd "${working_dir}"
+
+if [[ "$(hostname -f)" =~ .*\.ec2\.internal || "$(hostname -f)" =~ .*\.compute\.internal ]] ; then
+    # not so nice alternative to no-tcp-slow-start-after-idle:
+    #sudo ip route change default via 10.0.1.1 dev eth0 proto static initcwnd 100 initrwnd 100
+    #sudo sysctl -w net.ipv4.tcp_slow_start_after_idle=0
+    #sudo sysctl -w net.ipv4.tcp_rmem='4096 87380 33554432'
+    #sudo sysctl -w net.ipv4.tcp_wmem='4096 65536 33554432'
+    #sudo sysctl -w net.core.rmem_max=33554432
+    #sudo sysctl -w net.core.wmem_max=33554432
+
+    # sudo tcpdump -i eth0 -s 65536 -w "${logfile%.log}-dump.pcap" &
+
+    #sudo /usr/bin/stdbuf -o 0 /usr/sbin/nethogs -t -v 2 -d 1 | ts "%.s" > "${logfile%.log}-network.log" &
+    # pass a ptty to iftop to prevent it from messing up stdin. stdin must be a tty, otherwise iftop will use 100% CPU
+    script -qefc "sudo /usr/bin/stdbuf -o 0 /usr/sbin/iftop -B -t -l -n -N -o destination -L 1000 2>&1" </dev/null | ts "%.s" > "${logfile%.log}-iftop.log" &
+fi
+#scripts/test/helper/net-stat eth0 > "${logfile%.log}-network.log" &
+
+"$@" > >(exec tee "$logfile") 2>&1 &
+PID=$!
+set +e
+
+if [[ "$(uname -s)" == "Linux" ]]; then
+    stdbuf -o 0 top -b -d 1 -p ${PID} | awk -v OFS="\t" "/^ *${PID} /{print \$9, \$10; fflush()}" 2>&1 | ts "%.s" >  "${logfile%.log}-resources.log" &
+fi
+
+if [[ -n "$TIMEOUT" ]]; then
+    leave=0
+    trap "leave=1" INT
+
+    for ((i = 0; i < TIMEOUT; i++)) ; do
+        if [[ ${leave} -ne 0 ]] ; then
+            break
+        fi
+        if kill -0 ${PID} 2>/dev/null ; then
+            sleep 1
+        else
+            wait ${PID}
+            exit $?
+        fi
+    done
+    if [[ ${leave} -ne 0 ]] ; then
+        echo "Interrupted by signal - aborting..."
+    else
+        echo "Timeout of $TIMEOUT seconds exceeded - aborting..."
+    fi
+    kill ${PID} 2>/dev/null || true
+
+    for ((i = 0; i < 20; i++)) ; do
+        if kill -0 ${PID} 2>/dev/null ; then
+            sleep 1
+        else
+            break
+        fi
+    done
+    # make sure that the process will eventually die
+    kill -9 ${PID} 2>/dev/null || true
+fi
+
+wait ${PID}
+exit $?

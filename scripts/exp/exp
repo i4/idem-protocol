@@ -1,0 +1,30 @@
+#!/bin/bash
+set -e
+
+# Change to the script's directory
+MAIN_DIR="$(cd "$(dirname "$0")" && pwd)"
+export MAIN_DIR
+BASE_DIR="$(cd "${MAIN_DIR}/../.." && pwd)"
+export BASE_DIR
+
+if [[ "$1" == "-C" ]]; then
+  cd "$2"
+  shift 2
+fi
+
+cmd=$1
+shift || true
+
+if [[ -x "${MAIN_DIR}/exp-$cmd" ]]; then
+    exec "${MAIN_DIR}/exp-$cmd" "$@"
+else
+    echo "Usage: exp [-C change-to-directory] <command> [<args>...]"
+    echo "Available commands:"
+    cd "${MAIN_DIR}"
+    for i in exp-*; do
+        if [[ -x "$i" ]] ; then
+            echo "  ${i#exp-}"
+        fi
+    done
+    exit 1
+fi

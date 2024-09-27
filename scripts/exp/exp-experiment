@@ -1,0 +1,47 @@
+#!/bin/bash
+set -e
+
+SCRIPT_DIR="${BASE_DIR}/experiments"
+
+ERRORS=0
+
+check=""
+if [[ "$1" == "--check" ]]; then
+  echo "Checking experiment configurations"
+  check="--check"
+  shift
+fi
+
+for cmd in "$@"; do
+  if [[ "$cmd" == "" || ! -x "${SCRIPT_DIR}/$cmd/run.sh" ]]; then
+    echo "Invalid experiment name $cmd"
+    ERRORS=1
+  fi
+done
+
+if [[ $# == 0 ]]; then
+  ERRORS=1
+fi
+
+if [[ "$ERRORS" == 0 ]]; then
+  for cmd in "$@"; do
+    if [[ "$cmd" != "" || -x "${SCRIPT_DIR}/$cmd/run.sh" ]]; then
+      pushd "${SCRIPT_DIR}/$cmd" > /dev/null
+      if ! ./run.sh $check ; then
+        echo "!!! Execution failed !!!"
+        exit 1
+      fi
+      popd > /dev/null
+    fi
+  done
+else
+    echo "Usage: exp experiment [--check] experiment_name [experiment_name...]"
+    echo "Available experiments:"
+    cd "$SCRIPT_DIR"
+    for i in *; do
+        if [[ -x "$i/run.sh" ]] ; then
+            echo "  $i"
+        fi
+    done
+    exit 1
+fi

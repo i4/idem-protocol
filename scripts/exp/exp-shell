@@ -1,0 +1,17 @@
+#!/bin/bash
+
+if [[ -z "$MAIN_DIR" ]]; then
+  echo 1>&2 "Please call as 'path/to/exp shell'"
+  echo 1>&2 "Exiting..."
+  exit 1
+fi
+
+PATH="$MAIN_DIR:$PATH"
+export PATH
+echo "Environment configured"
+
+# FIXME
+# PS1="(exp) "
+# export PS1
+
+exec "$SHELL"

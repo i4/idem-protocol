@@ -1,0 +1,5 @@
+#!/bin/bash
+set -e
+
+cd "${BASE_DIR}"
+exec scripts/test/benchmark.py queue "$@"

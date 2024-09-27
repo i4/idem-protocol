@@ -1,0 +1,21 @@
+name: idem_${LOCALUID}_${LOCALGID}
+services:
+  idem-service:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      args:
+        LOCALUID: $LOCALUID
+        LOCALGID: $LOCALGID
+    image: idem
+    container_name: idem
+    volumes:
+      - framework:/home/idem/idem-framework
+volumes:
+  framework:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: .
+

@@ -1,0 +1,12 @@
+java = java -server "-XX:MaxGCPauseMillis=25" "-Xmx1536M"
+# java = java -server "-Xlog:gc" "-XX:+SafepointTimeout" "-XX:SafepointTimeoutDelay=10" "-Xmx6G" "-XX:MaxGCPauseMillis=25"
+#  "-XX:+UseCountedLoopSafepoints"
+# java = java -server -Xlog:gc=info:stdout:uptime
+# java = java -server "-XX:+PrintGC" "-XX:MaxGCPauseMillis=25"
+# java = java -server "-XX:+PrintGC" "-XX:+PrintGCTimeStamps" "-XX:+PrintGCDateStamps"
+# java = java -server "-XX:+PrintGCDetails" "-XX:+PrintGCTimeStamps" "-XX:+PrintGCDateStamps"
+java.classpath = bin/java:lib/eddsa-0.3.0.jar:lib/sqlite-jdbc-3.23.1.jar:lib/jackson-core-asl-1.9.4.jar:lib/htrace-core4-4.1.0-incubating.jar
+java.profile =
+# java.profile = -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=
+# use JDK mission control to analyze the logs
+# java.profile = -XX:+UnlockDiagnosticVMOptions -XX:+DebugNonSafepoints -XX:StartFlightRecording=disk=true,delay=5s,duration=50m,settings=profile,filename=

@@ -1,0 +1,37 @@
+#!/bin/bash
+set -e
+
+cd "${BASE_DIR}"
+SERVER_PREFIX=scripts/config/servers-
+TARGET=scripts/config/servers
+REL_PREFIX=./servers-
+servers="$1"
+
+if [[ -e "$SERVER_PREFIX$servers" ]]; then
+    ln -sfn "${REL_PREFIX}${servers}" "${TARGET}"
+else
+    if [[ -L "$TARGET" ]]; then
+        printf "Current selection: "
+        dest="$(readlink "$TARGET")"
+        echo "${dest#${REL_PREFIX}}"
+        echo ""
+    fi
+
+    echo "Available server maps:"
+    for i in "${SERVER_PREFIX}"*; do
+        if [[ -f "$i" ]] ; then
+            echo "  ${i#${SERVER_PREFIX}}"
+        fi
+    done
+
+    if [[ -n "$servers" ]]; then
+        echo "Ignoring invalid argument"
+        exit 1
+    fi
+    if [[ -f "$TARGET" ]]; then
+		echo ""
+		echo "Active configuration:"
+		cat "$TARGET"
+	fi
+    exit 0
+fi

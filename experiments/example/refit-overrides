@@ -1,0 +1,15 @@
+replica.network.addresses.variants = \
+    Value("server0, server1, server2, server3")
+
+application.request_size.variants = \
+    Value("1024", "data1024") \
+    Value("4096", "data4096")
+
+application.reply_size.variants = \
+    Value("1024", requires=("data1024",)) \
+    Value("4096", requires=("data4096",))
+
+client.count.variants = \
+    Value("20") \
+    Value("50") \
+    Value("100")

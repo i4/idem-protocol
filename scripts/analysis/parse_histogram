@@ -1,0 +1,28 @@
+#!/bin/bash
+
+if [[ "$#" -lt 2 ]]; then
+	echo "Usage: $0 output_file histogram_file ..."
+	exit 255
+fi
+
+OUTPUT_FILENAME=$1
+shift
+
+CMDS=()
+for file in "$@"; do
+    CMDS+=("'$file' using 4:1 with lines")
+done
+IFS=', ' CMDS="${CMDS[*]}"
+
+gnuplot <<EOF
+set term svg dynamic mouse standalone
+set output '$OUTPUT_FILENAME'
+set logscale x
+set xrange [1:1e7]
+set yrange [0:]
+set ylabel "us"
+set xtics ("0%%" 1.0, "90%%" 10.0, "99%%" 100.0, "99.9%%" 1000.0, "99.99%%" 10000.0, "99.999%%" 100000.0, "99.9999%%" 1000000.0, "99.99999%%" 10000000.0)
+set key top left
+set style line 1 lt 1 lw 3 pt 3 linecolor rgb "red"
+plot $CMDS
+EOF

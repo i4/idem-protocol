@@ -1,0 +1,3 @@
+java = java -server "-XX:MaxGCPauseMillis=42"
+java.classpath = bin/java:lib/*
+java.profile =

@@ -1,0 +1,9 @@
+client.count.variants = \
+    Value("1") \
+    Value("10") \
+    Value("20") \
+    Value("30") \
+    Value("40") \
+    Value("50") \
+    Value("60") \
+    Value("70")

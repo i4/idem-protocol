@@ -1,0 +1,114 @@
+run_number = 1
+
+# Cell
+system.faults = 1
+system.bft = false
+replica.count = 3
+replica.max_clients = 2000
+# default to replica.count
+client.count = 20
+client.multicast = true
+
+# Intervals and timeouts
+client.timeout.request = 1000
+replica.timeout.request = 2000
+replica.timeout.panic_interval = 4000
+
+# Client-replica & replica-replica communication
+system.crypto.authenticate = false
+system.crypto.ed25519 = false
+system.crypto.rsa_signature_size = 0
+system.signed_requests = false
+client.replies.hashed = false
+client.pbft_read_opt = false
+replica.client.autonomous_panics = false
+
+# Only process a certain number of requests in the system at a time
+replica.client.flow_control = true
+
+# Checkpoints
+replica.checkpoint.interval = 1000
+replica.checkpoint.quick_stability = true
+
+# Order stage
+replica.order.initial_view = 0
+replica.order.instance_factor = 10
+replica.order.instance_slack_factor = 2
+# <= 0 means unlimited
+replica.order.active_proposals = -1
+replica.order.min_batch = 1
+replica.order.max_batch = 10
+replica.order.batch_always = false
+replica.order.max_batch_bytes = 102400
+replica.order.prefer_full_batches = false
+replica.order.incomplete_batch_delay = 2
+replica.order.pbft.signatures = false
+
+# Idem
+replica.idem.forward_timeout = 10
+replica.idem.reject_grace_period = 0
+replica.idem.reject_threshold = 40
+replica.idem.reject_max_idle = 100
+replica.idem.reject_timeout = 5
+replica.idem.active_queue_management = true
+replica.idem.time_slice = 2000
+
+# Debugging and statistics
+system.debug_checks = false
+system.trace_auth = false
+system.trace_messages = false
+system.track_scheduler_hangs = false
+system.track_slow_stages = false
+system.statistics.stage = false
+client.statistics.repliers = false
+client.statistics.latency = false
+client.statistics.warm_up_seconds = 10
+# Split rejects from other results
+client.statistics.split_rejects = true
+
+# Schedulers
+client.schedulers = 12
+replica.schedulers = 1
+
+# Benchmark applications
+# must inherit from 'REFITApplicationServer'
+application.server = refit.application.ycsb.REFITYCSBServer
+# must inherit from 'REFITSystemApplicationServer'
+application.system.server = refit.application.REFITNopSystemServer
+# must inherit from 'REFITBenchmarkRunnable'
+application.client = refit.application.ycsb.REFITYCSBBenchmark
+# must inherit from 'REFITClientLibrary'
+application.library = refit.client.REFITLibByz
+# must inherit from 'REFITClientPolicy'
+application.policy = refit.client.policy.REFITYCSBPolicy
+# must inherit from 'REFITBaseReplica'
+application.replica = refit.replica.IDEMReplica
+
+# Benchmark workload
+application.request_size = 1024
+application.reply_size = 1024
+application.only_consistent = true
+application.wait_write = true
+application.ycsb_workload = a
+
+application.nodes = 100
+application.active_factor = 1
+# 0 = write-only, 1 = read-only
+application.read_ratio = 0.5
+application.update_last_access = false
+policy.open_loop.rate = 42
+policy.open_loop.slow_start_in_ms = 0
+
+# Communication
+replica.network.buffer.send.kb = 2048
+replica.network.buffer.receive.kb = 2048
+replica.network.connectors = 500
+replica.network.socket_backlog = 4096
+replica.network.buffer.client.kb = 20
+client.network.buffer.receive.kb = 20
+client.network.buffer.send.kb = 20
+client.network.individual_connectors = 10
+
+client.network.addresses = client0
+replica.network.addresses = server0, server1, server2
+replica.network.bind_address = 0.0.0.0

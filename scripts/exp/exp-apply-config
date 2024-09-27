@@ -1,0 +1,45 @@
+#!/bin/bash
+set -e
+
+config_path="$BASE_DIR/scripts/config"
+config_files=( "java" "refit-defaults" "refit-overrides" )
+
+source="$1"
+shift || true
+
+function help() {
+  echo "Usage: exp apply-config (--revert | <experiment_result>)"
+  exit 1
+}
+
+if [[ "$source" == "--revert" ]]; then
+  for i in "${config_files[@]}"; do
+    if [[ -f "$config_path/$i.bckpac" ]] ; then
+      mv "$config_path/$i.bckpac" "$config_path/$i"
+    fi
+  done
+elif [[ ! -d "$source" ]]; then
+  help
+else
+  for i in "${config_files[@]}"; do
+    if [[ -f "$config_path/$i.bckpac" ]] ; then
+      echo "Found previously applied configuration. Revert it before applying a new one! Aborting..."
+      help
+    fi
+  done
+
+  # backup original files, then copy the new ones
+  for i in "${config_files[@]}"; do
+    if [[ -f "$source/$i" ]] ; then
+      if ! cmp --silent "$source/$i" "$config_path/$i" ; then
+        echo "Applying $i"
+        mv "$config_path/$i" "$config_path/$i.bckpac"
+        cp "$source/$i" "$config_path/$i"
+      else
+        echo "Skipping $i (identical content)"
+      fi
+    else
+      echo "Missing $i"
+    fi
+  done
+fi

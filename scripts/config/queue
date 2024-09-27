@@ -1,0 +1,5 @@
+queue.host = localhost
+queue.user = idem
+queue.upload = queue/upload
+queue.path = queue
+queue.results = queue/results

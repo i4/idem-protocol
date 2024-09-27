@@ -1,0 +1,50 @@
+client0 = localhost
+client0loc = 0
+client0int = localhost
+client1 = localhost
+client1loc = 1
+client1int = localhost
+client2 = localhost
+client2loc = 2
+client2int = localhost
+client3 = localhost
+client3loc = 3
+client3int = localhost
+
+server0 = localhost
+server0int = localhost
+server0loc = 0
+server1 = localhost
+server1int = localhost
+server1loc = 0
+server2 = localhost
+server2int = localhost
+server2loc = 1
+server3 = localhost
+server3int = localhost
+server3loc = 1
+server4 = localhost
+server4int = localhost
+server4loc = 2
+server5 = localhost
+server5int = localhost
+server5loc = 2
+cloud0 = localhost
+cloud0int = localhost
+cloud0loc = 2
+cloud1 = localhost
+cloud1int = localhost
+cloud1loc = 2
+
+# Locations Ohio, Frankfurt, Sydney
+# Ping Ohio <-> Frankfurt: 98ms
+# Ping Ohio <-> Sydney: 194ms
+# Ping Frankfurt <-> Sydney: 284ms
+latency_0_1 = 49
+latency_0_2 = 97
+latency_1_2 = 142
+
+remote.user = username
+# {} expands to the remote.user name; paths starting with ~/ are interpreted relative to the users home directory
+# no futher path variable expansion will take place!
+remote.path = remote-runner

@@ -1,0 +1,9 @@
+#!/bin/bash
+
+interface=$1
+
+while true ; do
+    echo "Refreshing:"
+    awk "/$interface: /{ printf \"java/\t%u\t%u\n\", \$10, \$2 }" < /proc/net/dev
+    sleep 1
+done

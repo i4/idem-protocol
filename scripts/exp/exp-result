@@ -1,0 +1,10 @@
+#!/bin/bash
+set -e
+
+out="${PWD}"
+if [[ "$#" -ge 1 ]] ; then
+    out="$1"
+fi
+out="$(cd "$out" && pwd)"
+
+exec "${BASE_DIR}/scripts/test/benchmark.py" result "$@"
