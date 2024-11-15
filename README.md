@@ -4,7 +4,7 @@ This repository contains a prototype implementation of **Idem**, a crash fault-t
 Idem achieves this by using proactive rejection to avoid overload-induced tail latency and maintain a stable latency both in normal operation and severe overload situations.
 Idem uses a collaborative approach for overload prevention, allowing it to provide rejects also during replica crashes.
 
-For a detailed description of Idem and its overload prevention mechanism, please refer to the paper [Targeting Tail Latency in Replicated Systems with Proactive Rejection](fixme) by [Laura Lawniczak](https://sys.cs.fau.de/person/lawniczak) and [Tobias Distler](https://sys.cs.fau.de/person/distler) published at the [25th ACM/IFIP International Middleware Conference](fixme).
+For a detailed description of Idem and its overload prevention mechanism, please refer to the paper [Targeting Tail Latency in Replicated Systems with Proactive Rejection](https://sys.cs.fau.de/publications/2024/lawniczak_24_middleware.pdf) by [Laura Lawniczak](https://sys.cs.fau.de/person/lawniczak) and [Tobias Distler](https://sys.cs.fau.de/person/distler) published at the [25th ACM/IFIP International Middleware Conference](https://middleware-conf.github.io/2024/program/accepted-paper-list/).
 
 ## Requirements
 
